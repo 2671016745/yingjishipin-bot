@@ -1,2 +1,2 @@
-# yingjishipin-bot
+# 应急食品Bot使用指南
 只是我的bot（使用的是maibot）的一个小小使用指南
