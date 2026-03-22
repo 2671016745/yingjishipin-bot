@@ -1,4 +1,4 @@
-# 应急食品Bot使用指南
+# 应急食品Bot插件使用指南
 https://github.com/Mai-with-u/MaiBot  （这里是MaiBot仓库！）  
 只是我的bot（使用的是maibot）的一个小小使用指南
 ## 人物画像（maibot-character-sketch-plugin）
