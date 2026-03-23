@@ -1,6 +1,6 @@
 # 应急食品Bot插件使用指南
 只是我的bot（使用的是maibot）的一个小小使用指南  
-https://github.com/Mai-with-u/MaiBot  （这里是MaiBot仓库！）  
+[MaiBot原版仓库](https://github.com/Mai-with-u/MaiBot)  
 ## 人物画像（maibot-character-sketch-plugin）
 ### 使用说明
 触发方式：在群聊中发送 #画像 或 /画像。
