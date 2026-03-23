@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应急食品Bot插件使用指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: #333;
+            position: relative; /* 为固定图片做准备 */
+        }
+        /* 固定显示的头像样式 */
+        .fixed-img {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 150px; /* 缩小固定显示的图片尺寸，避免遮挡 */
+            z-index: 10; /* 保证在普通内容上方 */
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+            padding-right: 170px; /* 给固定图片留出空间 */
+        }
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 22px;
+            color: #34495e;
+            margin: 25px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid #3498db;
+        }
+        h3 {
+            font-size: 18px;
+            color: #41586e;
+            margin: 20px 0 10px;
+        }
+        h4 {
+            font-size: 16px;
+            color: #50677e;
+            margin: 15px 0 8px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #fff;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        code {
+            background-color: #f8f8f8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, monospace;
+            color: #e74c3c;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        pre code {
+            padding: 0;
+            color: #333;
+        }
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .warning {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        /* 插件卡片样式 */
+        .plugin-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .plugin-card h2 {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+            text-decoration: none;
+            margin: 10px 0;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+            text-decoration: none;
+        }
+        .btn-back {
+            background-color: #95a5a6;
+        }
+        .btn-back:hover {
+            background-color: #7f8c8d;
+        }
+        /* 模态框样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 900px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 固定显示的派蒙头像（添加跳转链接） -->
+<a href="https://qm.qq.com/cgi-bin/qm/qr?k=SSsUAFayivEhapnkl1qB947Z3luKxTYt&s=1" target="_blank">
+    <img src="https://github.com/2671016745/yingjishipin-bot/blob/main/%E6%B4%BE%E8%92%99%E5%8F%AF%E7%88%B1%E5%A4%B4%E5%83%8F%E4%B8%80%E5%BC%A0~.png" 
+         class="fixed-img" 
+         alt="派蒙头像"
+         style="cursor: pointer;"> <!-- 添加鼠标指针样式，提示可点击 -->
+</a>
+
+    <header class="clearfix">
+        <h1>应急食品Bot插件使用指南</h1>
+        <p>只是我的bot（使用的是maibot）的一个小小使用指南</p>
+        <p><a href="https://github.com/Mai-with-u/MaiBot" target="_blank">MaiBot原版仓库</a></p>
+    </header>
+
+    <!-- 插件列表（主界面） -->
+    <div class="plugin-list">
+        <!-- 人物画像插件 -->
+        <div class="plugin-card">
+            <h2>人物画像（maibot-character-sketch-plugin）</h2>
+            <button class="btn" onclick="openModal('modal-character')">查看详情</button>
+        </div>
+
+        <!-- 麦麦TRPG骰娘插件 -->
+        <div class="plugin-card">
+            <h2>麦麦TRPG骰娘插件</h2>
+            <button class="btn" onclick="openModal('modal-trpg')">查看详情</button>
+        </div>
+
+        <!-- 规则怪谈插件 -->
+        <div class="plugin-card">
+            <h2>规则怪谈插件 (Rule Horror Plugin)</h2>
+            <button class="btn" onclick="openModal('modal-rule-horror')">查看详情</button>
+        </div>
+
+        <!-- EasyPlugin 语音合成插件 -->
+        <div class="plugin-card">
+            <h2>EasyPlugin 语音合成插件（云端仓库池）</h2>
+            <button class="btn" onclick="openModal('modal-eztts')">查看详情</button>
+        </div>
+
+        <!-- 漂流瓶插件 -->
+        <div class="plugin-card">
+            <h2>漂流瓶</h2>
+            <button class="btn" onclick="openModal('modal-bottle')">查看详情</button>
+        </div>
+
+        <!-- 麦麦主动私聊插件 -->
+        <div class="plugin-card">
+            <h2>麦麦主动私聊插件</h2>
+            <button class="btn" onclick="openModal('modal-private-chat')">查看详情</button>
+        </div>
+
+        <!-- 今日老婆插件 -->
+        <div class="plugin-card">
+            <h2>今日老婆</h2>
+            <button class="btn" onclick="openModal('modal-wife')">查看详情</button>
+        </div>
+
+        <!-- Safebooru动漫图片搜索插件 -->
+        <div class="plugin-card">
+            <h2>Safebooru动漫图片搜索插件</h2>
+            <button class="btn" onclick="openModal('modal-safebooru')">查看详情</button>
+        </div>
+
+        <!-- MaiBot 每日分析插件 -->
+        <div class="plugin-card">
+            <h2>MaiBot 每日分析插件 📊</h2>
+            <button class="btn" onclick="openModal('modal-summary')">查看详情</button>
+        </div>
+
+        <!-- 麦诊所插件 -->
+        <div class="plugin-card">
+            <h2>Mai_clinic_plugin - 麦诊所</h2>
+            <button class="btn" onclick="openModal('modal-clinic')">查看详情</button>
+        </div>
+
+        <!-- 麦晨风财务总结插件 -->
+        <div class="plugin-card">
+            <h2>麦晨风财务总结插件(Expenses Summary)</h2>
+            <button class="btn" onclick="openModal('modal-expenses')">查看详情</button>
+        </div>
+
+        <!-- 智能提醒插件 -->
+        <div class="plugin-card">
+            <h2>⏰ 智能提醒插件 (Smart Reminder Plugin)</h2>
+            <button class="btn" onclick="openModal('modal-reminder')">查看详情</button>
+        </div>
+
+        <!-- 群聊静音插件 -->
+        <div class="plugin-card">
+            <h2>群聊静音插件 (GroupMuterPlugin)</h2>
+            <button class="btn" onclick="openModal('modal-muter')">查看详情</button>
+        </div>
+
+        <!-- 塔罗牌插件 -->
+        <div class="plugin-card">
+            <h2>塔罗牌插件（MaiBot_Tarots_Plugin_REBORN）</h2>
+            <button class="btn" onclick="openModal('modal-tarot')">查看详情</button>
+        </div>
+
+        <!-- 光遇工具插件 -->
+        <div class="plugin-card">
+            <h2>🌈 Sky Tools Plugin - 光遇工具插件</h2>
+            <button class="btn" onclick="openModal('modal-skytools')">查看详情</button>
+        </div>
+
+        <!-- Epic 限免游戏插件 -->
+        <div class="plugin-card">
+            <h2>Epic 限免游戏插件</h2>
+            <button class="btn" onclick="openModal('modal-epic')">查看详情</button>
+        </div>
+
+        <!-- 海龟汤插件 -->
+        <div class="plugin-card">
+            <h2>海龟汤插件 (My_Fucked_turtle_soup)</h2>
+            <button class="btn" onclick="openModal('modal-turtle')">查看详情</button>
+        </div>
+
+        <!-- 麦麦细说插件 -->
+        <div class="plugin-card">
+            <h2>麦麦细说插件 (Detailed Explanation Plugin)</h2>
+            <button class="btn" onclick="openModal('modal-detailed')">查看详情</button>
+        </div>
+
+        <!-- TTS 语音合成插件 -->
+        <div class="plugin-card">
+            <h2>TTS 语音合成插件</h2>
+            <button class="btn" onclick="openModal('modal-tts')">查看详情</button>
+        </div>
+
+        <!-- 娱乐插件 -->
+        <div class="plugin-card">
+            <h2>娱乐插件 (Entertainment Plugin)</h2>
+            <button class="btn" onclick="openModal('modal-entertainment')">查看详情</button>
+        </div>
+
+        <!-- 随机视频插件 -->
+        <div class="plugin-card">
+            <h2>随机视频插件 (Random Video Plugin)</h2>
+            <button class="btn" onclick="openModal('modal-video')">查看详情</button>
+        </div>
+
+        <!-- Lolicon色图插件 -->
+        <div class="plugin-card">
+            <h2>Lolicon色图插件 （Lolicon Setu 插件）</h2>
+            <button class="btn" onclick="openModal('modal-lolicon')">查看详情</button>
+        </div>
+
+        <!-- 随机图片和色图插件 -->
+        <div class="plugin-card">
+            <h2>随机图片和色图插件（Random-image-api-for-MaiBot）</h2>
+            <button class="btn" onclick="openModal('modal-random-image')">查看详情</button>
+        </div>
+    </div>
+
+    <!-- 人物画像插件详情弹窗 -->
+    <div id="modal-character" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">人物画像（maibot-character-sketch-plugin）</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用说明</h3>
+                <p>触发方式：在群聊中发送 <code>#画像</code> 或 <code>/画像</code>。</p>
+                <h4>指定对象：</h4>
+                <ul>
+                    <li><code>#画像 @某人</code>：为被艾特的用户生成画像。</li>
+                    <li><code>#画像 &lt;人物名称&gt;</code>：为该人物名称的用户生成画像。</li>
+                    <li><code>#画像</code>（无参数）：为发送指令的用户自己生成画像。</li>
+                </ul>
+                <h4>进阶用法：</h4>
+                <p>管理员可以使用 <code>#画像 &lt;用户&gt; &lt;聊天ID(私聊为对方QQ号，群聊为群号)&gt;</code> 跨聊天流获取画像。<br>
+                普通用户仅限获取当前聊天流画像，不能跨聊天流。</p>
+                <p>生成过程：<br>
+                插件检索指定范围内的历史消息。<br>
+                筛选目标用户的发言，并按配置补充前后上下文。<br>
+                对过长消息进行截断处理。<br>
+                将整理好的对话记录发送给 LLM。<br>
+                LLM 返回分析结果，Bot 发送回群聊。</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-character')">返回</button>
+        </div>
+    </div>
+        <!-- 新增：控制弹窗的JavaScript代码 -->
+    <script>
+        // 打开弹窗函数
+        function openModal(modalId) {
+            // 获取对应的弹窗元素
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                // 显示弹窗
+                modal.style.display = 'block';
+                // 禁止页面滚动
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // 关闭弹窗函数
+        function closeModal(modalId) {
+            // 获取对应的弹窗元素
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                // 隐藏弹窗
+                modal.style.display = 'none';
+                // 恢复页面滚动
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // 点击弹窗外部区域关闭弹窗
+        window.onclick = function(event) {
+            // 匹配所有modal类的元素
+            const modals = document.getElementsByClassName('modal');
+            for (let i = 0; i < modals.length; i++) {
+                if (event.target === modals[i]) {
+                    modals[i].style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        }
+
+        // 按ESC键关闭弹窗
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modals = document.getElementsByClassName('modal');
+                for (let i = 0; i < modals.length; i++) {
+                    modals[i].style.display = 'none';
+                }
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>
+    <!-- 麦麦TRPG骰娘插件详情弹窗 -->
+    <div id="modal-trpg" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">麦麦TRPG骰娘插件</h3>
+            </div>
+            <div class="modal-body">
+                <h3>❔命令使用方法</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>标准写法</th>
+                            <th>别名</th>
+                            <th>注释</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>/r [表达式] [原因]</td>
+                            <td>/掷骰 [表达式] [原因]</td>
+                            <td>掷出骰子，原因可留空 例：/r 2d100+2</td>
+                        </tr>
+                        <tr>
+                            <td>/rd [阈值]或[属性名]+[修正值] [原因]</td>
+                            <td>/检定 [阈值]或[属性名]+[修正值] [原因]</td>
+                            <td>使用[阈值]或[属性名]进行检定，修正值、原因可留空</td>
+                        </tr>
+                        <tr>
+                            <td>/创建角色 [昵称]</td>
+                            <td></td>
+                            <td>使用默认公式随机生成的属性进行游戏，[昵称]留空则默认使用用户QQ昵称</td>
+                        </tr>
+                        <tr>
+                            <td>/st [属性名][值]或[属性名][表达式]</td>
+                            <td>/导入 [属性名][值]或[属性名][表达式]</td>
+                            <td>自定义你的属性，可同时导入多个属性，范围0~200,初次导入时未指定的属性会使用默认公式填充</td>
+                        </tr>
+                        <tr>
+                            <td>/del [属性名]</td>
+                            <td>/删除 [属性名]</td>
+                            <td>删除对应属性</td>
+                        </tr>
+                        <tr>
+                            <td>/del_all</td>
+                            <td>/删除角色</td>
+                            <td>删除您的角色</td>
+                        </tr>
+                        <tr>
+                            <td>/qc</td>
+                            <td>/查询角色</td>
+                            <td>查看当前角色的基础属性</td>
+                        </tr>
+                        <tr>
+                            <td>/qs</td>
+                            <td>/查询技能</td>
+                            <td>查看当前角色除基础属性外的技能属性</td>
+                        </tr>
+                        <tr>
+                            <td>/qs [属性名]</td>
+                            <td>/查询技能 [属性名]</td>
+                            <td>查看当前角色的指定属性</td>
+                        </tr>
+                        <tr>
+                            <td>/sc [值]或[表达式]/[值]或[表达式]</td>
+                            <td>/san检定 [值]或[表达式]/[值]或[表达式]</td>
+                            <td>使用当前角色的理智进行检定，检定成功则扣除/前的值，失败则扣除/后的值</td>
+                        </tr>
+                        <tr>
+                            <td>/nn [新昵称]</td>
+                            <td></td>
+                            <td>将用户角色更名为[新昵称]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-trpg')">返回</button>
+        </div>
+    </div>
+
+    <!-- 规则怪谈插件详情弹窗 -->
+    <div id="modal-rule-horror" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">规则怪谈插件 (Rule Horror Plugin)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>基本命令</h3>
+                <h4>开始游戏</h4>
+                <ul>
+                    <li><code>/rg 开始 单人</code></li>
+                    <li><code>/rg 开始 多人</code></li>
+                    <li><code>/rg 开始 多人 开始</code></li>
+                </ul>
+                <p>多人模式下，<code>/rg 开始 多人</code> 会创建大厅，其他玩家使用 <code>/rg 加入</code> 加入，房主使用 <code>/rg 开始 多人 开始</code> 生成开局并开始游戏。</p>
+
+                <h4>强制开始</h4>
+                <ul>
+                    <li><code>/rg 强制开始 单人</code></li>
+                    <li><code>/rg 强制开始 多人</code></li>
+                </ul>
+
+                <h4>恢复存档</h4>
+                <ul>
+                    <li><code>/rg 恢复</code></li>
+                </ul>
+
+                <h4>存档管理</h4>
+                <ul>
+                    <li><code>/rg 保存 &lt;存档名称&gt;</code></li>
+                    <li><code>/rg 读取 &lt;存档名称&gt;</code></li>
+                    <li><code>/rg 存档列表</code></li>
+                    <li><code>/rg 清理存档</code></li>
+                </ul>
+
+                <h4>加入与离开</h4>
+                <ul>
+                    <li><code>/rg 加入</code></li>
+                    <li><code>/rg 离开</code></li>
+                </ul>
+
+                <h4>查看信息</h4>
+                <ul>
+                    <li><code>/rg 状态</code></li>
+                    <li><code>/rg 剧情</code></li>
+                    <li><code>/rg 规则</code></li>
+                    <li><code>/rg 场景</code></li>
+                    <li><code>/rg 道具</code></li>
+                    <li><code>/rg 道具 &lt;道具名称&gt;</code></li>
+                    <li><code>/rg 物品栏</code></li>
+                    <li><code>/rg 背包</code></li>
+                </ul>
+
+                <h4>进行游戏</h4>
+                <ul>
+                    <li><code>/rg 提示 规则</code></li>
+                    <li><code>/rg 提示 线索</code></li>
+                    <li><code>/rg 推理 &lt;推理内容&gt;</code></li>
+                    <li><code>/rg 行动 &lt;行动描述&gt;</code></li>
+                    <li><code>/rg 继续</code></li>
+                    <li><code>/rg 结束</code></li>
+                    <li><code>/rg 帮助</code></li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-rule-horror')">返回</button>
+        </div>
+    </div>
+
+    <!-- EasyPlugin 语音合成插件详情弹窗 -->
+    <div id="modal-eztts" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">EasyPlugin 语音合成插件（云端仓库池）</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用方法</h3>
+                <h4>手动命令：/eztts</h4>
+                <h4>语法：</h4>
+                <p><code>/eztts &lt;文本&gt; [-v &lt;角色:预设&gt;] [-e &lt;情绪/预设&gt;]</code></p>
+
+                <h4>示例：</h4>
+                <ul>
+                    <li><code>/eztts 你好世界</code></li>
+                    <li><code>/eztts 今天天气不错 -v mika:普通</code></li>
+                    <li><code>/eztts 我有点难过 -v mika -e 伤心</code></li>
+                </ul>
+
+                <h4>参数细节（避免踩坑）：</h4>
+                <ul>
+                    <li><code>-v mika:普通</code>：显式指定 preset，此时会被忽略-e</li>
+                    <li><code>-v mika -e 伤心</code>：只指定角色 + 用 指定 preset（推荐这种写法，语义更清晰）-e</li>
+                    <li><code>-e</code>的值必须在该角色里（或能被自动抓取到的 preset 下拉中找到）presets</li>
+                </ul>
+
+                <h4>诊断命令：/test</h4>
+                <p><code>/test</code>会发送插件目录下的，用于排查：test.wav<br>
+                NapCat / OneBot 适配器是否能正常发送语音<br>
+                如果都发不出去，优先检查底层（适配器/权限/消息段支持），而不是 TTS 合成逻辑/test</p>
+
+                <h4>自动语音回复（Action）</h4>
+                <p>打开，确保：config.toml<br>
+                <code>[components]</code><br>
+                <code>action_enabled = true</code></p>
+
+                <h4>选择模式：</h4>
+                <p><code>[general]</code><br>
+                <code>tts_mode_group = "free"</code>   # 或 "fixed"<br>
+                <code>tts_mode_private = "free"</code> # 或 "fixed"</p>
+
+                <h4>让 LLM 会用（很重要）：</h4>
+                <p>插件提供的 action 名为。你需要在 bot 的提示词/规划器说明中明确：unified_tts_action<br>
+                什么时候应该用语音（例如用户明确说“用语音说/朗读/tts”等）<br>
+                一条用户消息最多调用一次（free 模式已经在 action_require 里强约束）<br>
+                emotion只能从该角色真实存在的 preset 里选 1 个（不确定就留空）</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-eztts')">返回</button>
+        </div>
+    </div>
+
+    <!-- 漂流瓶插件详情弹窗 -->
+    <div id="modal-bottle" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">漂流瓶</h3>
+            </div>
+            <div class="modal-body">
+                <h3>触发命令</h3>
+                <p>扔漂流瓶<br>
+                群内发送 扔漂流瓶[内容] 将消息装入漂流瓶扔进大海</p>
+                <p>示例：<br>
+                扔漂流瓶今天天气真好！<br>
+                扔漂流瓶有人吗？交个朋友~</p>
+
+                <h3>捡漂流瓶</h3>
+                <p>群内发送 捡漂流瓶 从海中随机捡起一个漂流瓶</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-bottle')">返回</button>
+        </div>
+    </div>
+
+    <!-- 麦麦主动私聊插件详情弹窗 -->
+    <div id="modal-private-chat" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">麦麦主动私聊插件</h3>
+            </div>
+            <div class="modal-body">
+                <h3>命令使用方法</h3>
+                <ul>
+                    <li><code>/私聊 &lt;QQ号&gt;</code>  #立即私聊指定用户 *使用随机问候消息模版*</li>
+                    <li><code>/私聊列表</code>   #debug·在麦麦控制台日志中输出可私聊的用户列表</li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-private-chat')">返回</button>
+        </div>
+    </div>
+
+    <!-- 今日老婆插件详情弹窗 -->
+    <div id="modal-wife" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">今日老婆</h3>
+            </div>
+            <div class="modal-body">
+                <h3>触发命令</h3>
+                <p>群内发送、、即可抽取抽老婆今日老婆jrlp</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-wife')">返回</button>
+        </div>
+    </div>
+
+    <!-- Safebooru动漫图片搜索插件详情弹窗 -->
+    <div id="modal-safebooru" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Safebooru动漫图片搜索插件</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用方法</h3>
+                <h4>命令模式</h4>
+                <ul>
+                    <li><code>/safebooru cat cute</code></li>
+                    <li><code>/sb anime</code></li>
+                    <li><code>/safebooru 樱花 雪景</code></li>
+                </ul>
+
+                <h4>自然语言模式</h4>
+                <p>现在插件需要“显式唤醒”（如提到机器人名字或 @机器人）才能触发，除非处于 60 秒内的连续对话中。</p>
+                <ul>
+                    <li>发张猫猫的图片</li>
+                    <li>来张动漫图</li>
+                    <li>给我来点二次元图片</li>
+                    <li>发张风景壁纸</li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-safebooru')">返回</button>
+        </div>
+    </div>
+
+    <!-- MaiBot 每日分析插件详情弹窗 -->
+    <div id="modal-summary" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">MaiBot 每日分析插件 📊</h3>
+            </div>
+            <div class="modal-body">
+                <h3>📖 使用方法</h3>
+                <h4>群聊总结命令</h4>
+                <p>在群里发送以下命令：</p>
+                <ul>
+                    <li><code>/summary</code>              # 查看今天的群聊总结</li>
+                    <li><code>/summary 昨天</code>          # 查看昨天的群聊总结</li>
+                </ul>
+
+                <h4>个人总结命令</h4>
+                <ul>
+                    <li><code>/mysummary</code>            # 查看自己今天的个人总结</li>
+                    <li><code>/mysummary 昨天</code>        # 查看自己昨天的个人总结</li>
+                    <li><code>/mysummary @某人</code>       # 查看他人的个人总结（需要权限）</li>
+                    <li><code>/mysummary @某人 昨天</code>   # 查看他人昨天的个人总结</li>
+                </ul>
+                <p>📝 查看他人总结需要在 allowed_users 列表中，详见权限配置</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-summary')">返回</button>
+        </div>
+    </div>
+
+    <!-- 麦诊所插件详情弹窗 -->
+    <div id="modal-clinic" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mai_clinic_plugin - 麦诊所</h3>
+            </div>
+            <div class="modal-body">
+                <h3>游戏玩法</h3>
+                <h4>开始游戏</h4>
+                <p>在群里 @麦麦 说触发词（默认「麦诊所」）：<br>
+                @麦麦 麦诊所</p>
+
+                <h4>游戏流程</h4>
+                <ul>
+                    <li>病人来诊 - 麦麦会告诉你哪里不舒服</li>
+                    <li>问诊 - 直接打字问症状、病史等</li>
+                    <li>检查 - 可选，进行体格检查或辅助检查</li>
+                    <li>诊断 - 说出你的诊断结果</li>
+                    <li>评分 - 系统评估是否正确</li>
+                </ul>
+
+                <h4>问诊示例</h4>
+                <ul>
+                    <li>"什么时候开始的？"</li>
+                    <li>"疼痛是什么性质的？"</li>
+                    <li>"有其他症状吗？"</li>
+                    <li>"家族有遗传病史吗？"</li>
+                </ul>
+
+                <h4>体格检查</h4>
+                <p>听诊 / 触诊 / 叩诊 / 视诊<br>
+                测血压 / 量体温 / 测心率</p>
+
+                <h4>辅助检查</h4>
+                <p>血常规 / 尿常规 / 肝功能 / 肾功能<br>
+                测血糖 / 心电图 / 胸片 / 腹部B超</p>
+
+                <h4>做出诊断</h4>
+                <ul>
+                    <li>"诊断感冒"</li>
+                    <li>"你得的是胃炎"</li>
+                    <li>"应该是焦虑症"</li>
+                </ul>
+
+                <h4>其他命令</h4>
+                <ul>
+                    <li>成就 / 统计 - 查看个人战绩</li>
+                    <li>退出 / 不玩了 - 结束当前游戏</li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-clinic')">返回</button>
+        </div>
+    </div>
+
+    <!-- 麦晨风财务总结插件详情弹窗 -->
+    <div id="modal-expenses" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">麦晨风财务总结插件(Expenses Summary)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>触发方式</h3>
+                <h4>Command（指令触发）</h4>
+                <ul>
+                    <li><code>/expenses</code>        # 立即发送今日财报</li>
+                </ul>
+
+                <h4>Action（关键词触发）</h4>
+                <ul>
+                    <li>需要发送今日财务总结时</li>
+                    <li>有人让你咬牙切齿时</li>
+                    <li>有人让你模仿户晨风不可能不交时</li>
+                    <li>有人让你公开收入时</li>
+                </ul>
+
+                <h4>自动发送</h4>
+                <p>在 config.toml 中配置后，麦麦会每天定时将财报自动推送到私聊和群聊中。</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-expenses')">返回</button>
+        </div>
+    </div>
+
+    <!-- 智能提醒插件详情弹窗 -->
+    <div id="modal-reminder" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⏰ 智能提醒插件 (Smart Reminder Plugin)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>🚀 如何使用</h3>
+                <p>确保插件已启用，在私聊或群聊中对 Bot 发送包含关键词的消息。<br>
+                触发关键词： 提醒、叫我、记得、别忘了</p>
+
+                <h4>示例</h4>
+                <p>相对时间：<br>
+                "10分钟后提醒我关火"</p>
+                <p>绝对时间：<br>
+                "明天早上8点叫我起床"</p>
+                <p>模糊时间（依赖当前语境）：<br>
+                "别忘了晚上10点提醒我抢票"</p>
+                <p>注意：如果未指定具体时间，Bot 会提示你补充时间信息。</p>
+
+                <h4>群聊提醒示例</h4>
+                <p>当提醒在群聊中触发时，Bot会自动@设置提醒的用户：<br>
+                "@张三 该起床啦！你昨天让我今天早上8点叫你的~"</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-reminder')">返回</button>
+        </div>
+    </div>
+
+    <!-- 群聊静音插件详情弹窗 -->
+    <div id="modal-muter" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">群聊静音插件 (GroupMuterPlugin)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>命令示例</h3>
+                <h4>静音触发词</h4>
+                <ul>
+                    <li>Mute True</li>
+                    <li>应急食品你去看书去</li>
+                    <li>派蒙你看书去</li>
+                </ul>
+
+                <h4>解除静音触发词</h4>
+                <ul>
+                    <li>Mute False</li>
+                    <li>应急食品别看了</li>
+                    <li>派蒙别看了</li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-muter')">返回</button>
+        </div>
+    </div>
+
+    <!-- 塔罗牌插件详情弹窗 -->
+    <div id="modal-tarot" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">塔罗牌插件（MaiBot_Tarots_Plugin_REBORN）</h3>
+            </div>
+            <div class="modal-body">
+                <h3>必要指令 抽塔罗牌</h3>
+                <p>使用时需指定抽牌方式和抽牌范围，目前已默认支持的有:</p>
+                <h4>牌阵：</h4>
+                <p>单张, 圣三角,时间之流,四要素,五牌阵,吉普赛十字,马蹄,六芒星<br>
+                如果没有明确指定，默认抽单张。</p>
+
+                <h4>范围：</h4>
+                <p>全部,大阿卡纳,小阿卡纳<br>
+                如果没有明确指定，默认抽全部。</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-tarot')">返回</button>
+        </div>
+    </div>
+
+    <!-- 光遇工具插件详情弹窗 -->
+    <div id="modal-skytools" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🌈 Sky Tools Plugin - 光遇工具插件</h3>
+            </div>
+            <div class="modal-body">
+                <h3>📋 命令列表</h3>
+                <p>所有命令默认前缀为 #，可在配置中修改。</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>命令</th>
+                            <th>别名</th>
+                            <th>功能</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#all</td>
+                            <td>#每日、#日常、#rc、#mr</td>
+                            <td>查询全部内容（不包括身高）</td>
+                        </tr>
+                        <tr>
+                            <td>#task</td>
+                            <td>#rw、#任务、#每日任务</td>
+                            <td>每日任务位置图</td>
+                        </tr>
+                        <tr>
+                            <td>#candle</td>
+                            <td>#dl、#大蜡、#大蜡烛</td>
+                            <td>大蜡烛位置图</td>
+                        </tr>
+                        <tr>
+                            <td>#season_candle</td>
+                            <td>#jl、#季蜡</td>
+                            <td>季节蜡烛位置图</td>
+                        </tr>
+                        <tr>
+                            <td>#redstone</td>
+                            <td>#hs、#红石</td>
+                            <td>红石/黑石位置图</td>
+                        </tr>
+                        <tr>
+                            <td>#magic</td>
+                            <td>#mf、#魔法</td>
+                            <td>每日魔法兑换</td>
+                        </tr>
+                        <tr>
+                            <td>#calendar</td>
+                            <td>#rl、#日历</td>
+                            <td>当月活动日历</td>
+                        </tr>
+                        <tr>
+                            <td>#ancestor</td>
+                            <td>#fk、#复刻</td>
+                            <td>本周复刻先祖</td>
+                        </tr>
+                        <tr>
+                            <td>#skytest</td>
+                            <td></td>
+                            <td>服务器状态检测(是否炸服)</td>
+                        </tr>
+                        <tr>
+                            <td>#skytools</td>
+                            <td></td>
+                            <td>显示命令概览</td>
+                        </tr>
+                        <tr>
+                            <td>（以下是测身高的命令）</td>
+                            <td>（可爱的分割线）</td>
+                            <td>（以下是测身高的命令）</td>
+                        </tr>
+                        <tr>
+                            <td>#height &lt;游戏ID&gt; [好友码]</td>
+                            <td>注:此处的游戏ID需要长ID（原ID）</td>
+                            <td>使用默认平台查询</td>
+                        </tr>
+                        <tr>
+                            <td>#height &lt;平台&gt; &lt;游戏ID&gt; [好友码]</td>
+                            <td>注:此处的游戏ID需要长ID（原ID）</td>
+                            <td>指定平台查询</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4>测身高的平台别名：</h4>
+                <ul>
+                    <li>芒果平台：mango、mg、芒果</li>
+                    <li>独角兽平台：ovoav、djs、独角兽</li>
+                    <li>应天平台：yingtian、yt、应天</li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-skytools')">返回</button>
+        </div>
+    </div>
+
+    <!-- Epic 限免游戏插件详情弹窗 -->
+    <div id="modal-epic" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Epic 限免游戏插件</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用方法</h3>
+                <h4>查询限免游戏</h4>
+                <p>发送以下命令查询当前限免游戏：</p>
+                <ul>
+                    <li>/喜加一或 或#喜加一 喜加一</li>
+                    <li>/epic或 或#epic epic</li>
+                    <li>/Epic或 或#Epic Epic</li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-epic')">返回</button>
+        </div>
+    </div>
+
+    <!-- 海龟汤插件详情弹窗 -->
+    <div id="modal-turtle" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">海龟汤插件 (My_Fucked_turtle_soup)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用方法</h3>
+                <h4>基本命令</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>命令</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>/hgt 问题</td>
+                            <td>生成一个新的AI海龟汤题目，开始游戏。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 问题 &lt;你的问题&gt;</td>
+                            <td>向AI提问关于当前题目的问题。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 提示</td>
+                            <td>获取一个关于当前题目的提示（最多3次）。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 整理线索</td>
+                            <td>获取当前题目的关键线索整理。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 猜谜 &lt;你的答案&gt;</td>
+                            <td>尝试猜测当前题目的汤底（答案）。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 揭秘</td>
+                            <td>直接揭晓当前题目的汤底，并结束游戏。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 退出</td>
+                            <td>退出当前正在进行的游戏。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 帮助</td>
+                            <td>查看所有可用的命令帮助信息。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 汤面</td>
+                            <td>重新查看当前游戏的题目（汤面）。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 载入</td>
+                            <td>从插件目录下的 turtle.json 文件加载本地海龟汤题目。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 列表</td>
+                            <td>查看已载入的本地海龟汤题目列表及其序号。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 本地</td>
+                            <td>从已载入的本地题目库中随机选择一个开始游戏。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 本地 &lt;序号&gt;</td>
+                            <td>使用 /hgt 列表 中显示的序号，选择一个特定的本地题目开始游戏。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 模型</td>
+                            <td>查看当前可用的模型。需要在config.toml中配置。</td>
+                        </tr>
+                        <tr>
+                            <td>/hgt 模型 &lt;序号&gt;</td>
+                            <td>使用指定模型游玩还海龟汤。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-turtle')">返回</button>
+        </div>
+    </div>
+
+    <!-- 麦麦细说插件详情弹窗 -->
+    <div id="modal-detailed" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">麦麦细说插件 (Detailed Explanation Plugin)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>激活条件</h3>
+                <h4>插件会在以下情况下自动激活：</h4>
+                <h5>关键词触发</h5>
+                <p>当用户消息包含以下关键词时：详细 / 科普 / 解释 / 说明 / 原理 / 深入 / 具体 / 详细说说 等。</p>
+
+                <h3>适用场景</h3>
+                <ul>
+                    <li>科普知识问答</li>
+                    <li>技术原理解释</li>
+                    <li>概念详细说明</li>
+                    <li>复杂问题深入分析</li>
+                    <li>学术内容阐述</li>
+                </ul>
+
+                <h3>使用示例</h3>
+                <p>用户：详细解释一下 RAG 的完整工作流程<br>
+                麦麦：让我详细说明一下...<br>
+                麦麦：(1/3) 概览：RAG（Retrieval-Augmented Generation）通过“检索+生成”两阶段...<br>
+                麦麦：(2/3) 工作原理：①检索准备 ②查询扩展 ③召回候选 ④重排 ⑤上下文构建 ⑥生成器解码...<br>
+                麦麦：(3/3) 常见误区与实践建议：...</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-detailed')">返回</button>
+        </div>
+    </div>
+
+    <!-- TTS 语音合成插件详情弹窗 -->
+    <div id="modal-tts" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">TTS 语音合成插件</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用方法</h3>
+                <h4>命令触发</h4>
+                <ul>
+                    <li><code>/tts 你好世界</code>                    # 使用默认后端</li>
+                    <li><code>/tts 今天天气不错 小新</code>            # 指定音色</li>
+                    <li><code>/gsv2p 你好世界</code>                  # 使用 GSV2P</li>
+                    <li><code>/doubao 你好世界</code>                 # 使用豆包</li>
+                    <li><code>/cosyvoice 你好世界 四川话</code>        # 使用 CosyVoice，四川话</li>
+                </ul>
+
+                <h4>自动触发</h4>
+                <p>LLM 判断需要语音回复时会自动触发，可通过概率控制：<br>
+                <code>[probability]</code><br>
+                <code>enabled = false</code>          # 默认关闭，每次都触发语音<br>
+                <code>base_probability = 0.3</code>   # 启用时 30% 概率触发</p>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-tts')">返回</button>
+        </div>
+    </div>
+
+    <!-- 娱乐插件详情弹窗 -->
+    <div id="modal-entertainment" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">娱乐插件 (Entertainment Plugin)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>📖 使用方法</h3>
+                <h4>新闻功能</h4>
+                <h5>获取60秒新闻</h5>
+                <ul>
+                    <li><code>/news</code></li>
+                    <li><code>/新闻</code></li>
+                </ul>
+
+                <h5>获取历史上的今天</h5>
+                <ul>
+                    <li><code>/history</code></li>
+                    <li><code>/历史</code></li>
+                </ul>
+
+                <h4>音乐功能</h4>
+                <h5>搜索歌曲（使用默认音源）</h5>
+                <ul>
+                    <li><code>/music 晴天</code></li>
+                </ul>
+
+                <h5>指定音源搜索</h5>
+                <ul>
+                    <li><code>/music netease 勾指起誓</code></li>
+                    <li><code>/music qq 青花瓷</code></li>
+                    <li><code>/music netease_vip 稻香</code></li>
+                    <li><code>/music juhe 起风了</code></li>
+                </ul>
+
+                <h5>选择歌曲</h5>
+                <ul>
+                    <li><code>/choose 1</code></li>
+                </ul>
+
+                <h5>快捷选择（搜索后60秒内有效）</h5>
+                <ul>
+                    <li>1    # 直接输入数字</li>
+                </ul>
+
+                <h4>AI绘图功能</h4>
+                <h5>命令触发</h5>
+                <ul>
+                    <li><code>/draw jk</code></li>
+                    <li><code>/绘图 可爱的猫咪</code></li>
+                    <li><code>/画图 动漫少女</code></li>
+                </ul>
+
+                <h4>看看腿功能</h4>
+                <h5>关键词触发</h5>
+                <ul>
+                    <li>看看腿</li>
+                    <li>看腿</li>
+                    <li>康康腿</li>
+                </ul>
+
+                <h5>命令触发</h5>
+                <ul>
+                    <li><code>/kankan</code></li>
+                    <li><code>/看腿</code></li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-entertainment')">返回</button>
+        </div>
+    </div>
+
+    <!-- 随机视频插件详情弹窗 -->
+    <div id="modal-video" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">随机视频插件 (Random Video Plugin)</h3>
+            </div>
+            <div class="modal-body">
+                <h3>使用方法</h3>
+                <h4>在聊天框中输入以下任一指令：</h4>
+                <ul>
+                    <li><code>/sjsp</code></li>
+                    <li><code>/随机视频</code></li>
+                    <li><code>/小姐姐视频</code></li>
+                    <li><code>/小姐姐</code></li>
+                    <li><code>/xjj</code></li>
+                    <li><code>/视频</code></li>
+                    <li><code>/随机短视频</code></li>
+                </ul>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-video')">返回</button>
+        </div>
+    </div>
+
+    <!-- Lolicon色图插件详情弹窗 -->
+    <div id="modal-lolicon" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Lolicon色图插件 （Lolicon Setu 插件）</h3>
+            </div>
+            <div class="modal-body">
+                <h3>🎮 使用方法</h3>
+                <h4>基础命令</h4>
+                <ul>
+                    <li><code>/setu</code>              # 获取1张随机图片</li>
+                    <li><code>/setu 3</code>            # 获取3张图片</li>
+                    <li><code>/setu help</code>         # 显示帮助信息</li>
+                </ul>
+
+                <h4>标签搜索 (用 # 号)</h4>
+                <h5>标签搜索支持AND和OR组合：</h5>
+                <ul>
+                    <li><code>/setu #萝莉</code>              # 搜索萝莉标签</li>
+                    <li><code>/setu #白丝,黑丝</code>         # OR搜索：白丝或黑丝</li>
+                    <li><code>/setu #萝莉 #白丝</code>        # AND搜索：萝莉且白丝</li>
+                    <li><code>/setu 5 #风景 #唯美</code>      # 获取5张风景且唯美的图</li>
+                </ul>
+
+                <h4>关键词搜索 (直接输入文本)</h4>
+                <h5>关键词会在标题、作者、标签中模糊匹配：</h5>
+                <ul>
+                    <li><code>/setu 原神</code>         # 搜索原神相关</li>
+                    <li><code>/setu 初音未来</code>      # 搜索初音未来</li>
+                    <li><code>/setu 风景 5</code>       # 搜索5张风景相关图片</li>
+                </ul>
+
+                <h5>长宽比筛选</h5>
+                <ul>
+                    <li><code>/setu 横图</code>           # 横图 (长宽比>1)</li>
+                    <li><code>/setu 竖图</code>           # 竖图 (长宽比<1)</li>
+                    <li><code>/setu 方图</code>           # 方图 (长宽比=1)</li>
+                    <li><code>/setu gt1.7lt1.8</code>     # 自定义：1.7 < 长宽比 < 1.8 (约16:9)</li>
+                </ul>
+
+                <h5>长宽比表达式格式：(gt|gte|lt|lte|eq)数字</h5>
+                <ul>
+                    <li>gt: 大于</li>
+                    <li>gte: 大于等于</li>
+                    <li>lt: 小于</li>
+                    <li>lte: 小于等于</li>
+                    <li>eq: 等于</li>
+                </ul>
+
+                <h4>排除AI作品</h4>
+                <ul>
+                    <li><code>/setu noai</code>         # 排除AI作品</li>
+                    <li><code>/setu 5 noai</code>       # 获取5张非AI作品</li>
+                </ul>
+
+                <h4>作者筛选</h4>
+                <ul>
+                    <li><code>/setu uid:12345</code>    # 获取指定UID作者的作品</li>
+                </ul>
+
+                <h4>R18内容</h4>
+                <ul>
+                    <li><code>/setu r18</code>          # 获取R18图片（需配置允许）</li>
+                    <li><code>/setu 3 r18</code>        # 获取3张R18图片</li>
+                </ul>
+
+                <h4>组合使用</h4>
+                <ul>
+                    <li><code>/setu 3 #萝莉,少女 横图</code>              # 3张萝莉或少女的横图</li>
+                    <li><code>/setu #白丝 #JK noai</code>                # 白丝且JK，排除AI</li>
+                    <li><code>/setu 原神 5 竖图</code>                   # 5张原神相关竖图</li>
+                    <li><code>/setu #风景 #唯美 gt1.5 noai</code>        # 风景且唯美，长宽比>1.5，非AI</li>
+                </ul>
+
+                <h4>兼容旧格式</h4>
+                <p>插件也支持旧的冒号格式：</p>
+                <ul>
+                    <li><code>/setu keyword:原神</code>      # 等同于 /setu #原神</li>
+                    <li><code>/setu tag:萝莉</code>          # 等同于 /setu #萝莉</li>
+                    <li><code>/setu kw:初音未来</code>       # keyword的缩写</li>
+                </ul>
+
+                <h3>📊 图片规格说明</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>规格</th>
+                            <th>说明</th>
+                            <th>适用场景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>original</td>
+                            <td>原图</td>
+                            <td>最高质量，文件较大</td>
+                        </tr>
+                        <tr>
+                            <td>regular</td>
+                            <td>常规图</td>
+                            <td>推荐，质量好且文件适中</td>
+                        </tr>
+                        <tr>
+                            <td>small</td>
+                            <td>小图</td>
+                            <td>流量受限场景</td>
+                        </tr>
+                        <tr>
+                            <td>thumb</td>
+                            <td>缩略图</td>
+                            <td>快速预览</td>
+                        </tr>
+                        <tr>
+                            <td>mini</td>
+                            <td>迷你图</td>
+                            <td>极小尺寸</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-back" onclick="closeModal('modal-lolicon')">返回</button>
+        </div>
+    </div>
+
+    <!-- 随机图片和色图插件详情弹窗 -->
+    <div id="modal-random-image" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">随机图片和色图插件（Random-image-api-for-MaiBot）</h3>
+            </div>
+            <div class="modal-body">
+                <h3>基础命令</h3>
+                <h4>随机图片</h4>
+                <ul>
+                    <li>来张图 3</li>
+                    <li>随机图片 help</li>
+                </ul>
+
+                <h4>支持的常用触发词</h4>
+                <p>随机图片 / 来张图 / 来点图 / 来点图片 / 来张图片/涩图 / 来张涩图 / 来点涩图 / 随机涩图 / setu / 来张setu / 来点setu</p>
+
+                <h4>标签筛选</h4>
+                <ul>
+                    <li>随机图片 #原神</li>
+                    <li>随机图片 #碧蓝航线 #巨乳</li>
+                    <li>随机图片 -#AI</li>
+                    <li>随机图片 #原神 -#AI</li>
+                </ul>
+
+                <h4>AI 控制</h4>
+                <ul>
+                    <li>随机图片 noai</li>
+                    <li>随机图片 ai</li>
+                </ul>
+
+                <h4>R18 用法</h4>
+                <ul>
+                    <li>随机图片 r18</li>
+                    <li>来张涩图</li>
+                    <li>来张涩图 3 #FGO</li>
+                </ul>
+
+                <h4>其他筛选参数</h4>
+                <ul>
+                    <li>随机图片 横屏</li>
+                    <li>随机图片 竖屏</li>
+                    <li>随机图片 方形</li>
+                    <li>随机图片 uid:12345678</li>
+                    <li>随机图片 收藏>1000</li>
+                    <li>随机图片 浏览>5000</li>
+                    <li>随机图片 宽度>1920</li>
+                    <li>随机图片 高度>1080</li>
+                    <li>随机图片 像素>2073600</li>
+                    <li>随机图片 quality</li>
+                    <li>随机图片 random</li>
+                </ul>
+
+                <h4>组合示例</h4>
+                <ul>
+                    <li>来张图 3 #原神 noai 横屏</li>
+                    <li>随机图片 5 #碧蓝航线 收藏>1500</li>
+                    <li>随机图片 #白丝 -#AI uid:12345678</li>
+                    <li>来张涩图 #FGO quality</li>
+                    <li>来张涩图 3 收藏>2000 横屏</li>
+                </ul>
+
+                <h4>📊 参数速查表</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>参数</th>
+                            <th>作用</th>
+                            <th>示例</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>数字</td>
+                            <td>获取数量（1-10）</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>#标签</td>
+                            <td>包含标签</td>
+                            <td>#原神</td>
+                        </tr>
+                        <tr>
+                            <td>-#标签</td>
+                            <td>排除标签</td>
+                            <td>-#AI</td>
+                        </tr>
+                        <tr>
+                            <td>r18</td>
+                            <td>请求 R18</td>
+                            <td>随机图片 r18</td>
+                        </tr>
+                        <tr>
+                            <td>noai</td>
+                            <td>只要非 AI 图</td>
+                            <td>noai</td>
+                        </tr>
+                        <tr>
+                            <td>ai</td>
+                            <td>只要 AI 图</td>
+                            <td>ai</td>
+                        </tr>
+                        <tr>
+                            <td>横屏/竖屏/方形</td>
+                            <td>方向筛选</td>
+                            <td>横屏</td>
+                        </tr>
+                        <tr>
+                            <td>uid:数字</td>
+                            <td>指定画师</td>
+                            <td>uid:12345678</td>
+                        </tr>
+                        <tr>
+                            <td>收藏>数字</td>
+                            <td>收藏下限</td>
+                            <td>收藏>1000</td>
+                        </tr>
+                        <tr>
+                            <td>浏览>数字</td>
+                            <td>浏览下限</td>
+                            <td>浏览>5000</td>
+                        </tr>
+                        <tr>
+                            <td>宽度>数字</td>
+                            <td>最小宽度</td>
+                            <td>宽度>1920</td>
+                        </tr>
+                        <tr>
+                            <td>高度>数字</td>
+                            <td>最小高度</td>
+                            <td>高度>1080</td>
+                        </tr>
+                        <tr>
+                            <td>像素>数字</td>
+                            <td>最小像素</td>
+                            <td>像素>2073600</td>
+                        </tr>
+                        <tr>
+                            <td>quality/random</td>
+                            <td>切换策略</td>
+                            <td>quality</td>
+                        </tr>
+                        <tr>
+                            <td>help</td>
+                            <td>查看帮助</td>
+                            <td>help</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning">
+                    <h4>⚠️注意事项</h4>
+                    <ul>
+                        <li>插件默认安装后是关闭的，要手动打开enabled = true</li>
+                        <li>全局冷却默认 10 秒，一个人触发后其他人也要等</li>
+                        <li>R18 名单识别用的是群号和 QQ 号，不是聊天流 ID</li>
+                        <li>如果 R18 被禁止，不会报权限错误，而是自动回退到普通图</li>
+                        <li>所有图片版权归原作者所有，请勿用于违法或商业滥用场景</li>
+                    </ul>
